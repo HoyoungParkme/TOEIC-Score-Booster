@@ -118,60 +118,51 @@ export class DatabaseStorage implements IStorage {
 
     // Seed data
     const seedData = [];
-    const sampleWords900 = [
-      { w: "abandon", m: "버리다, 포기하다", e: "He abandoned the plan." },
-      { w: "abbreviate", m: "요약하다, 단축하다", e: "The text was abbreviated." },
-      { w: "calamity", m: "재난, 불행", e: "The war was a calamity." },
-      { w: "deceive", m: "속이다, 기만하다", e: "Don't try to deceive me." },
-      { w: "eccentric", m: "별난, 엉뚱한", e: "His behavior is eccentric." },
-      { w: "facilitate", m: "용이하게 하다", e: "Tools facilitate work." },
-      { w: "garrulous", m: "수다스러운", e: "She is a garrulous woman." },
-      { w: "hinder", m: "방해하다", e: "Bad weather hindered us." },
-      { w: "impartial", m: "공정한", e: "A judge must be impartial." },
-      { w: "jeopardize", m: "위태롭게 하다", e: "Do not jeopardize your career." },
-    ];
     
-    const sampleWords800 = [
-      { w: "access", m: "접근, 이용", e: "I have access to the file." },
-      { w: "benefit", m: "이익, 혜택", e: "The new law benefits everyone." },
-      { w: "cancel", m: "취소하다", e: "The meeting was canceled." },
-      { w: "deadline", m: "마감일", e: "The deadline is tomorrow." },
-      { w: "efficient", m: "효율적인", e: "This method is efficient." },
-      { w: "feature", m: "특징, 기능", e: "The car has many features." },
-      { w: "generate", m: "생성하다", e: "Windmills generate power." },
-      { w: "hire", m: "고용하다", e: "We need to hire more staff." },
-      { w: "implement", m: "시행하다", e: "We implemented the plan." },
-      { w: "justify", m: "정당화하다", e: "Can you justify your actions?" },
-    ];
+    // Level 900: 68 words per day
+    // Level 800: 32 words per day
+    
+    // Better seed data for TOEIC context
+    const toeicPrefixes = ["Global", "Business", "Strategic", "Innovative", "Corporate", "Financial", "Market", "Customer", "Product", "System"];
+    const toeicNouns = ["Agreement", "Expansion", "Investment", "Review", "Analysis", "Proposal", "Contract", "Service", "Department", "Policy"];
+    const toeicVerbs = ["increased", "finalized", "developed", "requested", "approved", "managed", "presented", "organized", "conducted", "launched"];
 
-    // Generate 30 days of data for each level
     for (let day = 1; day <= 30; day++) {
-      // 900 Level (add 5-10 words per day)
-      sampleWords900.forEach((item, idx) => {
+      // 900 Level (68 words)
+      for (let i = 1; i <= 68; i++) {
+        const prefix = toeicPrefixes[i % toeicPrefixes.length];
+        const noun = toeicNouns[(i + day) % toeicNouns.length];
+        const verb = toeicVerbs[(i * day) % toeicVerbs.length];
         seedData.push({
           level: 900,
           day: day,
-          word: `${item.w} (D${day})`, // Make unique for demo
-          meaningKo: item.m,
-          exampleEn: item.e,
-          exampleKo: "예문 해석입니다."
+          word: `${prefix} ${noun} ${i}`,
+          meaningKo: `토익 900 필수 어휘 ${i}: ${prefix}한 ${noun}`,
+          exampleEn: `The company ${verb} the ${prefix.toLowerCase()} ${noun.toLowerCase()}.`,
+          exampleKo: `회사는 그 ${prefix.toLowerCase()}한 ${noun.toLowerCase()}을(를) ${verb}했다.`
         });
-      });
+      }
 
-      // 800 Level
-      sampleWords800.forEach((item, idx) => {
+      // 800 Level (32 words)
+      for (let i = 1; i <= 32; i++) {
+        const prefix = toeicPrefixes[(i + 5) % toeicPrefixes.length];
+        const noun = toeicNouns[(i * 2) % toeicNouns.length];
         seedData.push({
           level: 800,
           day: day,
-          word: `${item.w} (D${day})`,
-          meaningKo: item.m,
-          exampleEn: item.e,
-          exampleKo: "예문 해석입니다."
+          word: `${prefix} ${noun} ${i}`,
+          meaningKo: `토익 800 필수 어휘 ${i}: ${prefix}한 ${noun}`,
+          exampleEn: `Please review this ${prefix.toLowerCase()} ${noun.toLowerCase()}.`,
+          exampleKo: `이 ${prefix.toLowerCase()}한 ${noun.toLowerCase()}을(를) 검토해 주세요.`
         });
-      });
+      }
     }
 
-    await db.insert(words).values(seedData);
+    // Insert in batches to avoid query size limits
+    const batchSize = 500;
+    for (let i = 0; i < seedData.length; i += batchSize) {
+      await db.insert(words).values(seedData.slice(i, i + batchSize));
+    }
   }
 }
 

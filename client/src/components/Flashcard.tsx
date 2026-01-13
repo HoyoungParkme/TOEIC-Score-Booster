@@ -34,9 +34,9 @@ export function Flashcard({ word, onToggleFavorite, isFlipped, onFlip }: Flashca
       onClick={onFlip}
     >
       <motion.div
-        className="w-full h-full relative transform-style-3d transition-all duration-500"
+        className="w-full h-full relative transform-style-3d"
         animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
       >
         {/* Front Face */}
         <div className="absolute inset-0 w-full h-full backface-hidden bg-white rounded-3xl shadow-xl border border-border/50 flex flex-col items-center justify-center p-8">

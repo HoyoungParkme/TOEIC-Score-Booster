@@ -60,7 +60,7 @@ export default function StudyMode() {
     if (isLast) {
       setCompleted(true);
     } else {
-      setTimeout(() => setCurrentIndex(prev => prev + 1), 200);
+      setCurrentIndex(prev => prev + 1);
     }
   };
 

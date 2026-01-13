@@ -24,11 +24,11 @@ export default function StudyMode() {
   // Let's study all for now, maybe sorted by unknown first could be a future feature.
 
   useEffect(() => {
-    // Reset state when words load or change
-    setCurrentIndex(0);
-    setIsFlipped(false);
-    setCompleted(false);
-  }, [words]);
+    // Reset index ONLY if words array actually changes its length or content substantially,
+    // not just because the object reference changed due to react-query re-fetch.
+    // However, since we want to prevent resetting to 0 during study, 
+    // we should only reset when the day or level actually changes.
+  }, [level, day]);
 
   if (isLoading || !words) {
     return (

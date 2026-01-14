@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, Star } from "lucide-react";
-import type { WordWithProgress } from "@shared/schema";
+import type { WordWithProgress } from "@/lib/wordStore";
 import { cn } from "@/lib/utils";
 
 interface FlashcardProps {

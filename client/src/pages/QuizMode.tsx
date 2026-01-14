@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { CheckCircle, XCircle, ArrowRight, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { WordWithProgress } from "@shared/schema";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function QuizMode() {
@@ -19,25 +18,34 @@ export default function QuizMode() {
   const { data: words, isLoading } = useWordsByDay(level, day);
   const submitQuiz = useSubmitQuiz();
 
+  type QuizModeType = "multiple-choice" | "typing";
+
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [wrongWords, setWrongWords] = useState<number[]>([]);
   const [quizState, setQuizState] = useState<'intro' | 'active' | 'finished'>('intro');
+  const [quizMode, setQuizMode] = useState<QuizModeType | null>(null);
   const [userAnswer, setUserAnswer] = useState("");
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState<'correct' | 'incorrect' | null>(null);
+  const quizModeLabel = quizMode === "typing"
+    ? "Type Word"
+    : quizMode === "multiple-choice"
+      ? "Select Meaning"
+      : "Quiz";
 
   // Initialize Quiz
-  const startQuiz = () => {
+  const startQuiz = (mode: QuizModeType) => {
     if (!words) return;
+    setQuizMode(mode);
     
     // Shuffle words and pick 10 (or less if not enough)
     const shuffled = [...words].sort(() => 0.5 - Math.random()).slice(0, 10);
     
     // Generate questions
     const generatedQuestions = shuffled.map(word => {
-      const type = Math.random() > 0.5 ? 'multiple-choice' : 'typing';
+      const type = mode;
       
       // For multiple choice, get 3 random wrong answers
       const wrongOptions = words
@@ -117,11 +125,16 @@ export default function QuizMode() {
           </div>
           <h2 className="text-3xl font-bold font-display">Test Your Skills</h2>
           <p className="text-muted-foreground">
-            10 questions from Day {day}. Mixed format: typing & multiple choice.
+            10 questions from Day {day}. Choose a quiz mode to begin.
           </p>
-          <Button onClick={startQuiz} size="xl" className="w-full max-w-xs rounded-full mt-8 text-lg font-semibold">
-            Start Quiz
-          </Button>
+          <div className="w-full max-w-xs space-y-3 mt-8">
+            <Button onClick={() => startQuiz("multiple-choice")} size="xl" className="w-full rounded-full text-lg font-semibold">
+              Select Meaning
+            </Button>
+            <Button onClick={() => startQuiz("typing")} size="xl" variant="outline" className="w-full rounded-full text-lg font-semibold">
+              Type Word
+            </Button>
+          </div>
         </div>
       </Layout>
     );
@@ -173,7 +186,7 @@ export default function QuizMode() {
 
   // ACTIVE QUIZ SCREEN
   return (
-    <Layout title={`Question ${currentQIndex + 1}/${questions.length}`}>
+    <Layout title={`${quizModeLabel} ${currentQIndex + 1}/${questions.length}`}>
       <div className="max-w-md mx-auto h-full flex flex-col justify-between py-4">
         <div className="flex-1 flex flex-col justify-center space-y-8">
           

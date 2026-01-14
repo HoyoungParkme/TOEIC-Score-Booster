@@ -1,10 +1,13 @@
-const CACHE_NAME = "toeic-offline-v2";
+const CACHE_NAME = "toeic-offline-v3";
+const scopeUrl = new URL(self.registration.scope);
+const basePath = scopeUrl.pathname.replace(/\/$/, "");
+const appShellUrl = `${basePath}/`;
 const PRECACHE_URLS = [
-  "/",
-  "/index.html",
-  "/manifest.webmanifest",
-  "/favicon.png",
-  "/apple-touch-icon.png",
+  appShellUrl,
+  `${basePath}/index.html`,
+  `${basePath}/manifest.webmanifest`,
+  `${basePath}/favicon.png`,
+  `${basePath}/apple-touch-icon.png`,
 ];
 
 self.addEventListener("install", (event) => {
@@ -40,15 +43,15 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      caches.match("/").then((cached) => {
+      caches.match(appShellUrl).then((cached) => {
         if (cached) return cached;
         return fetch(request)
           .then((res) => {
             const copy = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put("/", copy));
+            caches.open(CACHE_NAME).then((cache) => cache.put(appShellUrl, copy));
             return res;
           })
-          .catch(() => caches.match("/"));
+          .catch(() => caches.match(appShellUrl));
       }),
     );
     return;

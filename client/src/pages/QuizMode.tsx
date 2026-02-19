@@ -40,8 +40,8 @@ export default function QuizMode() {
     if (!words) return;
     setQuizMode(mode);
     
-    // Shuffle words and pick 10 (or less if not enough)
-    const shuffled = [...words].sort(() => 0.5 - Math.random()).slice(0, 10);
+    // Shuffle all words for the selected day
+    const shuffled = [...words].sort(() => 0.5 - Math.random());
     
     // Generate questions
     const generatedQuestions = shuffled.map(word => {
@@ -114,6 +114,7 @@ export default function QuizMode() {
   };
 
   if (isLoading) return <Layout showBack title="Loading Quiz..."><div className="p-8 text-center">Preparing...</div></Layout>;
+  if (!words) return <Layout showBack title={`Day ${day} Quiz`}><div className="p-8 text-center text-muted-foreground">No words available.</div></Layout>;
 
   // INTRO SCREEN
   if (quizState === 'intro') {
@@ -125,13 +126,13 @@ export default function QuizMode() {
           </div>
           <h2 className="text-3xl font-bold font-display">Test Your Skills</h2>
           <p className="text-muted-foreground">
-            10 questions from Day {day}. Choose a quiz mode to begin.
+            {words.length} questions from Day {day}. Choose a quiz mode to begin.
           </p>
           <div className="w-full max-w-xs space-y-3 mt-8">
-            <Button onClick={() => startQuiz("multiple-choice")} size="xl" className="w-full rounded-full text-lg font-semibold">
+            <Button onClick={() => startQuiz("multiple-choice")} className="w-full rounded-full text-lg font-semibold">
               Select Meaning
             </Button>
-            <Button onClick={() => startQuiz("typing")} size="xl" variant="outline" className="w-full rounded-full text-lg font-semibold">
+            <Button onClick={() => startQuiz("typing")} variant="outline" className="w-full rounded-full text-lg font-semibold">
               Type Word
             </Button>
           </div>

@@ -1,4 +1,4 @@
-const CACHE_NAME = "toeic-offline-v3";
+const CACHE_NAME = "toeic-offline-v4";
 const scopeUrl = new URL(self.registration.scope);
 const basePath = scopeUrl.pathname.replace(/\/$/, "");
 const appShellUrl = `${basePath}/`;
@@ -43,30 +43,37 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      caches.match(appShellUrl).then((cached) => {
-        if (cached) return cached;
-        return fetch(request)
-          .then((res) => {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(appShellUrl, copy));
-            return res;
-          })
-          .catch(() => caches.match(appShellUrl));
-      }),
+      fetch(request)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(appShellUrl, copy));
+          return res;
+        })
+        .catch(() =>
+          caches
+            .match(appShellUrl)
+            .then((cached) => cached ?? caches.match(`${basePath}/index.html`)),
+        ),
     );
     return;
   }
 
   event.respondWith(
     caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request)
+      const networkRequest = fetch(request)
         .then((res) => {
           const copy = res.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
           return res;
         })
         .catch(() => cached);
+
+      if (cached) {
+        networkRequest.catch(() => null);
+        return cached;
+      }
+
+      return networkRequest;
     }),
   );
 });

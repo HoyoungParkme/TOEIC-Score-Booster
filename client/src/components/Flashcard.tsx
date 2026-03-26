@@ -54,15 +54,15 @@ export function Flashcard({ word, onToggleFavorite, isFlipped, onFlip }: Flashca
           </div>
           
           <div className="text-center space-y-6">
-            <h2 className="text-4xl md:text-5xl font-bold font-display text-primary tracking-tight">
-              {word.word}
-            </h2>
             <Badge
               variant="secondary"
               className="mx-auto w-fit text-[11px] font-medium text-muted-foreground"
             >
               {word.partOfSpeech}
             </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold font-display text-primary tracking-tight">
+              {word.word}
+            </h2>
             <button
               onClick={handleSpeak}
               className={cn(

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Volume2, Star } from "lucide-react";
 import type { WordWithProgress } from "@/lib/wordStore";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface FlashcardProps {
   word: WordWithProgress;
@@ -56,6 +57,12 @@ export function Flashcard({ word, onToggleFavorite, isFlipped, onFlip }: Flashca
             <h2 className="text-4xl md:text-5xl font-bold font-display text-primary tracking-tight">
               {word.word}
             </h2>
+            <Badge
+              variant="secondary"
+              className="mx-auto w-fit text-[11px] font-medium text-muted-foreground"
+            >
+              {word.partOfSpeech}
+            </Badge>
             <button
               onClick={handleSpeak}
               className={cn(
@@ -91,6 +98,12 @@ export function Flashcard({ word, onToggleFavorite, isFlipped, onFlip }: Flashca
 
           <div className="text-center space-y-6 w-full">
             <div className="space-y-2">
+              <Badge
+                variant="outline"
+                className="mx-auto w-fit border-white/20 bg-white/10 text-[11px] font-medium text-white"
+              >
+                {word.partOfSpeech}
+              </Badge>
               <span className="text-xs uppercase tracking-widest text-white/50 font-bold">Meaning</span>
               <h3 className="text-2xl md:text-3xl font-bold leading-tight">
                 {word.meaningKo}

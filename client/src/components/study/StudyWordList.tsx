@@ -45,6 +45,12 @@ export function StudyWordList({
                 <p className="truncate text-lg font-bold text-foreground">
                   {word.word}
                 </p>
+                <Badge
+                  variant="secondary"
+                  className="w-fit text-[11px] font-medium text-muted-foreground"
+                >
+                  {word.partOfSpeech}
+                </Badge>
                 <p className="line-clamp-2 text-sm text-muted-foreground">
                   {word.meaningKo}
                 </p>

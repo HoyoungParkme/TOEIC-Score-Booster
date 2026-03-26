@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0 --port 4173",
-    "check": "tsc"
+    "check": "tsc",
+    "generate:pos": "node scripts/generate-pos-map.mjs",
+    "check:pos": "node scripts/check-pos.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -13,12 +13,17 @@
  */
 
 import { wordData } from "@/lib/wordData";
+import {
+  partOfSpeechById,
+  type PartOfSpeech,
+} from "@/lib/partOfSpeechData";
 
 export type Word = {
   id: number;
   level: number;
   day: number;
   word: string;
+  partOfSpeech: PartOfSpeech;
   meaningKo: string;
   exampleEn?: string | null;
   exampleKo?: string | null;
@@ -111,7 +116,20 @@ function getWordsByLevel(level: number): Word[] {
   if (wordsCache.has(level)) {
     return wordsCache.get(level) ?? [];
   }
-  const words = wordData.filter((word) => word.level === level);
+  const words = wordData
+    .filter((word) => word.level === level)
+    .map((word) => {
+      const partOfSpeech = partOfSpeechById[word.id];
+
+      if (!partOfSpeech) {
+        throw new Error(`Missing part of speech for word ${word.id}`);
+      }
+
+      return {
+        ...word,
+        partOfSpeech,
+      };
+    });
   wordsCache.set(level, words);
   return words;
 }
